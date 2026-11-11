@@ -1,0 +1,15 @@
+# 日志与临时产物
+*.log
+tmp/
+temp/
+
+# 截图 / 调试输出
+*.png
+*.jpg
+shot*.html
+
+# 依赖与系统文件
+node_modules/
+.DS_Store
+Thumbs.db
+desktop.ini
