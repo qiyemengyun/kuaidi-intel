@@ -17,6 +17,7 @@ kuaidi-intel/
 └── scripts/
     ├── show-report.vbs          # 重建并打开页面（桌面快捷方式）
     ├── start-report-server.vbs  # 后台启动局域网服务（开机自启）
+    ├── push.mjs                 # git push（github.com 直连不通时自动换边缘 IP）
     └── allow-port-8000.cmd      # 放行 Windows 防火墙入站 TCP 8000（需管理员）
 ```
 
@@ -29,6 +30,20 @@ kuaidi-intel/
    - 本地：双击 `scripts/show-report.vbs`，或直接打开 `docs/index.html`
    - 局域网：`node tools/serve-report.mjs` 后访问 `http://<主机名>:8000`（需先跑一次 `allow-port-8000.cmd`）
    - 公网：推送到 GitHub 仓库，开启 Pages（分支 `main`，目录 `/docs`）
+
+## 推送到 GitHub
+
+```bash
+node scripts/push.mjs          # 等价于 git push origin main，但带 IP 回退
+```
+
+**为什么要这个脚本**：本机所在网络下 `github.com` 的默认解析 IP（`20.205.243.16x`）经常连不通（`Failed to connect to github.com:443`），而 GitHub 其它边缘 IP 是通的。脚本先按常规直连，失败后依次用 `http.curloptResolve` 把 `github.com:443` 指向候选 IP 重试，命中即推送成功。
+
+凭据由 Windows 凭据管理器（GCM）保存，日常推送无需再次登录；如需更换令牌，在 GitHub 生成新的 Personal Access Token（`repo` 权限）后执行：
+
+```bash
+printf "protocol=https\nhost=github.com\nusername=<你的用户名>\npassword=<新令牌>\n\n" | git credential approve
+```
 
 ## 手动使用
 
